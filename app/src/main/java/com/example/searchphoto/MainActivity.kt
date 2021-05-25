@@ -1,23 +1,53 @@
 package com.example.searchphoto
 
+import android.app.Activity
 import android.app.Dialog
+import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.net.Uri
 import android.net.http.SslError
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Environment
 import android.os.Message
+import android.provider.MediaStore
+import android.util.Log
 import android.view.ViewGroup
 import android.webkit.*
+import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
+import androidx.core.content.FileProvider
+import com.gun0912.tedpermission.PermissionListener
+import com.gun0912.tedpermission.TedPermission
+import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
+    lateinit var requestActivity: ActivityResultLauncher<Intent>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        var wv = this.findViewById<WebView>(R.id.wv)
+        requestActivity = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) {
+                activityResult ->
+            Toast.makeText(this, "TEST : " + activityResult.resultCode, Toast.LENGTH_SHORT).show()
 
+
+        }
+
+        var wv = this.findViewById<WebView>(R.id.wv)
+        wv.addJavascriptInterface(WebAppInterface(this), "Android")
         wv.apply {
             webViewClient = WebViewClient()
 
@@ -81,6 +111,23 @@ class MainActivity : AppCompatActivity() {
 
         val url = "http://14.63.221.64:48084/sample/searchPhoto"
         wv.loadUrl(url)
+    }
+
+    fun test() {
+
+    }
+
+    inner class WebAppInterface(private val mContext: Context) {
+        @JavascriptInterface
+        fun showToast(message : String) {
+            Log.d("WebAppInterface","Called showToast()")
+            Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show()
+        }
+
+        @JavascriptInterface
+        fun startCapture() {
+            requestActivity.launch(Intent(mContext, CaptureActivity::class.java))
+        }
     }
 
     inner class WebViewClientClass : WebViewClient() {
