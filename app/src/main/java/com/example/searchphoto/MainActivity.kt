@@ -36,18 +36,21 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        var wv = this.findViewById<WebView>(R.id.wv)
+        wv.addJavascriptInterface(WebAppInterface(this), "Android")
 
         requestActivity = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) {
                 activityResult ->
             Toast.makeText(this, "TEST : " + activityResult.resultCode, Toast.LENGTH_SHORT).show()
-
-
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                wv.evaluateJavascript("javascript:setResult('" + activityResult.resultCode + "');"
+                    , ValueCallback {  })
+            } else {
+                wv.loadUrl("javascript:setResult('" + activityResult.resultCode + "');")
+            }
         }
-
-        var wv = this.findViewById<WebView>(R.id.wv)
-        wv.addJavascriptInterface(WebAppInterface(this), "Android")
         wv.apply {
             webViewClient = WebViewClient()
 
