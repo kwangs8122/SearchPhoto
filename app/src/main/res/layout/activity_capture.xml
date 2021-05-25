@@ -9,7 +9,8 @@
     <ImageView
         android:id="@+id/img_view"
         android:layout_width="match_parent"
-        android:layout_height="265dp"
+        android:layout_height="317dp"
+        android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.034"
