@@ -116,10 +116,6 @@ class MainActivity : AppCompatActivity() {
         wv.loadUrl(url)
     }
 
-    fun test() {
-
-    }
-
     inner class WebAppInterface(private val mContext: Context) {
         @JavascriptInterface
         fun showToast(message : String) {
