@@ -12,6 +12,8 @@ import android.provider.MediaStore
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import com.gun0912.tedpermission.PermissionListener
@@ -22,12 +24,34 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class CaptureActivity : AppCompatActivity() {
-    val REQUEST_IMAGE_CAPTURE = 1
     lateinit var currentPhotoPath : String
+    lateinit var requestActivity: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_capture)
+
+        requestActivity = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) {
+                activityResult ->
+            var img_view = findViewById<ImageView>(R.id.img_view)
+
+            if(activityResult.resultCode == Activity.RESULT_OK){
+                val file = File(currentPhotoPath)
+                if (Build.VERSION.SDK_INT < 28) {
+                    val bitmap = MediaStore.Images.Media
+                        .getBitmap(contentResolver, Uri.fromFile(file))
+                    img_view.setImageBitmap(bitmap)
+                }
+                else{
+                    val decode = ImageDecoder.createSource(this.contentResolver,
+                        Uri.fromFile(file))
+                    val bitmap = ImageDecoder.decodeBitmap(decode)
+                    img_view.setImageBitmap(bitmap)
+                }
+            }
+        }
 
         startCapture()
 
@@ -76,29 +100,10 @@ class CaptureActivity : AppCompatActivity() {
                         it
                     )
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+//                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+
+                    requestActivity.launch(takePictureIntent)
                 }
-            }
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        var img_view = findViewById<ImageView>(R.id.img_view)
-
-        if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK){
-            val file = File(currentPhotoPath)
-            if (Build.VERSION.SDK_INT < 28) {
-                val bitmap = MediaStore.Images.Media
-                    .getBitmap(contentResolver, Uri.fromFile(file))
-                img_view.setImageBitmap(bitmap)
-            }
-            else{
-                val decode = ImageDecoder.createSource(this.contentResolver,
-                    Uri.fromFile(file))
-                val bitmap = ImageDecoder.decodeBitmap(decode)
-                img_view.setImageBitmap(bitmap)
             }
         }
     }
