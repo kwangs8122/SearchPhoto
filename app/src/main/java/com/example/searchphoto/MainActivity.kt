@@ -43,7 +43,6 @@ class MainActivity : AppCompatActivity() {
             ActivityResultContracts.StartActivityForResult()
         ) {
                 activityResult ->
-            Toast.makeText(this, "TEST : " + activityResult.resultCode, Toast.LENGTH_SHORT).show()
 
             val photoFileName = activityResult.data?.getStringExtra("FILE_NAME")
 
