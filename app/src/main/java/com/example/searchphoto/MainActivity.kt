@@ -44,11 +44,14 @@ class MainActivity : AppCompatActivity() {
         ) {
                 activityResult ->
             Toast.makeText(this, "TEST : " + activityResult.resultCode, Toast.LENGTH_SHORT).show()
+
+            val photoFileName = activityResult.data?.getStringExtra("FILE_NAME")
+
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                wv.evaluateJavascript("javascript:setResult('" + activityResult.resultCode + "');"
+                wv.evaluateJavascript("javascript:setResult('" + photoFileName + "');"
                     , ValueCallback {  })
             } else {
-                wv.loadUrl("javascript:setResult('" + activityResult.resultCode + "');")
+                wv.loadUrl("javascript:setResult('" + photoFileName + "');")
             }
         }
         wv.apply {

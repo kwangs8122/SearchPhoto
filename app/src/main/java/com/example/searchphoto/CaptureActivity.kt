@@ -40,7 +40,9 @@ class CaptureActivity : AppCompatActivity() {
 
         btnUse.setOnClickListener {
 //            this.startActivity(Intent(this, MainActivity::class.java))
-            setResult(1)
+            val intent = Intent(this, MainActivity::class.java)
+            intent.putExtra("FILE_NAME", currentPhotoPath)
+            setResult(RESULT_OK, intent)
             finish()
         }
     }
