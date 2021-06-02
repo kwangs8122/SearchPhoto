@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "72036358641",
+    "project_id": "searchphoto-821ab",
+    "storage_bucket": "searchphoto-821ab.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:72036358641:android:c991bd7706150f8b1ccc50",
+        "android_client_info": {
+          "package_name": "com.example.searchphoto"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "72036358641-61m2cejulob88n5g7cfkipsnnhi42d2s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAD0fFX1WCPOUCBPNX_2SmVQtkbpPzeYiw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "72036358641-61m2cejulob88n5g7cfkipsnnhi42d2s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
