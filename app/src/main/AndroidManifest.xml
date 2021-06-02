@@ -34,7 +34,7 @@
         </provider>
 
         <service
-            android:name="com.example.searchphoto.MessagingService"
+            android:name=".MessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
