@@ -1,6 +1,7 @@
 package com.example.searchphoto
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.app.NotificationChannel
