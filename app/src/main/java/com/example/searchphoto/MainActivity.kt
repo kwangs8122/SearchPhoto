@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity() {
     fun getToken() {
         Firebase.messaging.getToken().addOnCompleteListener(OnCompleteListener { task ->
             if (!task.isSuccessful) {
-                Log.w("MainActivity", "Fetching FCM registration token failed", task.exception)
+                Log.w(TAG, "Fetching FCM registration token failed", task.exception)
                 return@OnCompleteListener
             }
 
@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity() {
             val token = task.result
 
             // Log and toast
-            val msg: String = "Token = " + token
+            val msg: String = "Token = $token"
             Log.d(TAG, msg)
 //            Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
 
