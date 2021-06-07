@@ -13,11 +13,8 @@ import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.net.http.SslError
-import android.os.Build
+import android.os.*
 import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import android.os.Environment
-import android.os.Message
 import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
@@ -62,7 +59,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun getToken() {
+    fun getToken(callback: ((String) -> Unit)) {
         Firebase.messaging.token.addOnCompleteListener(OnCompleteListener { task ->
             if (!task.isSuccessful) {
                 Log.w(TAG, "Fetching FCM registration token failed", task.exception)
@@ -77,19 +74,7 @@ class MainActivity : AppCompatActivity() {
             Log.d(TAG, msg)
 //            Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
 
-            var parameters: HashMap<String, Any> = HashMap<String, Any>();
-            parameters.put("USER_ID", SimpleDateFormat("yyyyMMddHHmmss").format(Date()).toString())
-            parameters.put("USER_PW", "test")
-            parameters.put("DVC_OS_TYPE", "AND")
-            parameters.put("DVC_PUSH_TOKEN", token.toString())
-            parameters.put("DVC_UUID", Settings.Secure.getString(applicationContext.contentResolver,
-                Settings.Secure.ANDROID_ID))
-
-            val response: JSONObject = HttpHelper().post("http://14.63.221.64:48084/sample/api/setToken", parameters)!!
-
-            Log.d(TAG, "result = $response")
-
-            Toast.makeText(applicationContext, response.getString("RESULT_MESSAGE"), Toast.LENGTH_SHORT).show()
+            callback(token!!)
         })
     }
 
@@ -97,7 +82,28 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         createNotificationChannel()
-        getToken()
+        getToken { token ->
+            Thread {
+                var parameters: HashMap<String, Any> = HashMap<String, Any>();
+                parameters.put("USER_ID", SimpleDateFormat("yyyyMMddHHmmss").format(Date()).toString())
+                parameters.put("USER_PW", "test")
+                parameters.put("DVC_OS_TYPE", "AND")
+                parameters.put("DVC_PUSH_TOKEN", token.toString())
+                parameters.put("DVC_UUID", Settings.Secure.getString(applicationContext.contentResolver,
+                    Settings.Secure.ANDROID_ID))
+
+                Log.d(TAG, "request parameters = $parameters")
+
+                val response: JSONObject = HttpHelper().post("http://14.63.221.64:48084/sample/api/setToken", parameters)!!
+
+                Log.d(TAG, "result = $response")
+
+
+                Looper.prepare()
+                Toast.makeText(applicationContext, response.getString("resultMessage"), Toast.LENGTH_SHORT).show()
+                Looper.loop()
+            }.start()
+        }
 
         var wv = this.findViewById<WebView>(R.id.wv)
         wv.addJavascriptInterface(WebAppInterface(this), "Android")
