@@ -9,15 +9,14 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
-import com.gun0912.tedpermission.PermissionListener
-import com.gun0912.tedpermission.TedPermission
+import com.example.searchphoto.common.FileUploadUtils
+import org.json.JSONObject
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -67,8 +66,16 @@ class CaptureActivity : AppCompatActivity() {
             val intent = Intent(this, MainActivity::class.java).apply {
                 this.putExtra("FILE_NAME", currentPhotoPath)
             }
-            setResult(RESULT_OK, intent)
-            finish()
+
+            Thread() {
+                val json: JSONObject =
+                    FileUploadUtils().send2Server(File(currentPhotoPath), HashMap<String, Any>())
+
+                Log.d(javaClass.name, "json = $json")
+
+                setResult(RESULT_OK, intent)
+                finish()
+            }.start()
         }
     }
 
@@ -86,7 +93,6 @@ class CaptureActivity : AppCompatActivity() {
     }
 
     fun startCapture(){
-        settingPermission()
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
             takePictureIntent.resolveActivity(packageManager)?.also {
                 val photoFile: File? = try{
@@ -107,31 +113,5 @@ class CaptureActivity : AppCompatActivity() {
                 }
             }
         }
-    }
-
-    fun settingPermission(){
-        var permis = object  : PermissionListener {
-            //            어떠한 형식을 상속받는 익명 클래스의 객체를 생성하기 위해 다음과 같이 작성
-            override fun onPermissionGranted() {
-                Toast.makeText(this@CaptureActivity, "권한 허가", Toast.LENGTH_SHORT)
-                    .show()
-            }
-
-            override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
-                Toast.makeText(this@CaptureActivity, "권한 거부", Toast.LENGTH_SHORT)
-                    .show()
-                ActivityCompat.finishAffinity(this@CaptureActivity) // 권한 거부시 앱 종료
-            }
-        }
-
-        TedPermission.with(this)
-            .setPermissionListener(permis)
-            .setRationaleMessage("카메라 사진 권한 필요")
-            .setDeniedMessage("카메라 권한 요청 거부")
-            .setPermissions(
-                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-//                android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                android.Manifest.permission.CAMERA)
-            .check()
     }
 }

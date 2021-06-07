@@ -44,6 +44,32 @@ class MainActivity : AppCompatActivity() {
 
     private val TAG: String = javaClass.name
 
+    private fun settingPermission(){
+        var permis = object  : PermissionListener {
+            //            어떠한 형식을 상속받는 익명 클래스의 객체를 생성하기 위해 다음과 같이 작성
+            override fun onPermissionGranted() {
+                Toast.makeText(this@MainActivity, "권한 허가", Toast.LENGTH_SHORT)
+                    .show()
+            }
+
+            override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
+                Toast.makeText(this@MainActivity, "권한 거부", Toast.LENGTH_SHORT)
+                    .show()
+                ActivityCompat.finishAffinity(this@MainActivity) // 권한 거부시 앱 종료
+            }
+        }
+
+        TedPermission.with(this)
+            .setPermissionListener(permis)
+            .setRationaleMessage("카메라 사진 권한 필요")
+            .setDeniedMessage("카메라 권한 요청 거부")
+            .setPermissions(
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+//                android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                android.Manifest.permission.CAMERA)
+            .check()
+    }
+
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "samplechannel"
@@ -81,6 +107,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        settingPermission()
+
         createNotificationChannel()
         getToken { token ->
             Thread {

@@ -16,7 +16,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SearchPhoto"
         android:usesCleartextTraffic="true">
-        <activity android:name=".CaptureActivity"></activity>
+        <activity android:name=".CaptureActivity"
+            android:exported="true"></activity>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
