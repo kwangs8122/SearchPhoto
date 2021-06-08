@@ -140,11 +140,14 @@ class MainActivity : AppCompatActivity() {
 
             val photoFileName = activityResult.data?.getStringExtra("FILE_NAME")
 
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                wv.evaluateJavascript("javascript:setResult('" + photoFileName + "');"
-                    , ValueCallback {  })
-            } else {
-                wv.loadUrl("javascript:setResult('" + photoFileName + "');")
+            if (photoFileName != null && !"".equals(photoFileName)) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    wv.evaluateJavascript(
+                        "javascript:setResult('" + photoFileName + "');",
+                        ValueCallback { })
+                } else {
+                    wv.loadUrl("javascript:setResult('" + photoFileName + "');")
+                }
             }
         }
         wv.apply {

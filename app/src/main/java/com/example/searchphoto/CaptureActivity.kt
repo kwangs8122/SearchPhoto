@@ -49,6 +49,8 @@ class CaptureActivity : AppCompatActivity() {
                     val bitmap = ImageDecoder.decodeBitmap(decode)
                     img_view.setImageBitmap(bitmap)
                 }
+            } else if (activityResult.resultCode == Activity.RESULT_CANCELED) {
+                finish()
             }
         }
 
