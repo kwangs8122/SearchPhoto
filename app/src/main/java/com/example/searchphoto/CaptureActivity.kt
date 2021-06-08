@@ -63,19 +63,21 @@ class CaptureActivity : AppCompatActivity() {
 
         btnUse.setOnClickListener {
 //            this.startActivity(Intent(this, MainActivity::class.java))
-            val intent = Intent(this, MainActivity::class.java).apply {
-                this.putExtra("FILE_NAME", currentPhotoPath)
-            }
 
-            Thread() {
+
+            Thread(Runnable {
                 val json: JSONObject =
                     FileUploadUtils().send2Server(File(currentPhotoPath), HashMap<String, Any>())
 
                 Log.d(javaClass.name, "json = $json")
 
+                val intent = Intent(this, MainActivity::class.java).apply {
+                    this.putExtra("FILE_NAME", json.getJSONObject("result").getString("url"))
+                }
+
                 setResult(RESULT_OK, intent)
                 finish()
-            }.start()
+            }).start()
         }
     }
 

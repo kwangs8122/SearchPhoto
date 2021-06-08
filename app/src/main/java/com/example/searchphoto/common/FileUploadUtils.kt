@@ -36,8 +36,8 @@ class FileUploadUtils {
 
         try {
             val response: String = client.newCall(request).execute()!!
-                .body
-                .toString()
+                .body!!
+                .string()
 
             Log.d(TAG, "Response = $response")
 

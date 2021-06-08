@@ -77,6 +77,7 @@ class MainActivity : AppCompatActivity() {
             val importance = NotificationManager.IMPORTANCE_DEFAULT
             val channel = NotificationChannel("channelId", name, importance).apply {
                 description = descriptionText
+                setShowBadge(true)
             }
 
             val notificationManager: NotificationManager =
@@ -112,7 +113,7 @@ class MainActivity : AppCompatActivity() {
 
         createNotificationChannel()
         getToken { token ->
-            Thread {
+            Thread(Runnable {
                 var parameters: HashMap<String, Any> = HashMap<String, Any>();
                 parameters.put("USER_ID", SimpleDateFormat("yyyyMMddHHmmss").format(Date()).toString())
                 parameters.put("USER_PW", "test")
@@ -126,12 +127,7 @@ class MainActivity : AppCompatActivity() {
                 val response: JSONObject = HttpHelper().post("http://14.63.221.64:48084/sample/api/setToken", parameters)!!
 
                 Log.d(TAG, "result = $response")
-
-
-                Looper.prepare()
-                Toast.makeText(applicationContext, response.getString("resultMessage"), Toast.LENGTH_SHORT).show()
-                Looper.loop()
-            }.start()
+            }).start()
         }
 
         var wv = this.findViewById<WebView>(R.id.wv)
