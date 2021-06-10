@@ -47,7 +47,7 @@ class FileUploadUtils {
 
         } catch (e: Exception) {
             print(e.localizedMessage)
-//            Log.e(TAG, e.localizedMessage)
+            Log.e(TAG, e.localizedMessage)
         }
 
         return rtn

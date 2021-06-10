@@ -2,10 +2,7 @@ package com.example.searchphoto
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.app.Dialog
-import android.app.NotificationChannel
-import android.app.NotificationManager
+import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -18,8 +15,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.webkit.*
+import android.widget.Button
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -235,7 +234,32 @@ class MainActivity : AppCompatActivity() {
 
         @JavascriptInterface
         fun startCapture() {
-            requestActivity.launch(Intent(mContext, CaptureActivity::class.java))
+
+            val inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            val view = inflater.inflate(R.layout.select_layout, null)
+            val alertDialog = AlertDialog.Builder(mContext).create()
+
+            view.findViewById<Button>(R.id.btnCamera).apply {
+                this.setOnClickListener{
+                    val intent = Intent(mContext, CaptureActivity::class.java)
+                    requestActivity.launch(intent)
+
+                    alertDialog.dismiss()
+                }
+            }
+
+            view.findViewById<Button>(R.id.btnAlbum).apply {
+                this.setOnClickListener {
+                    val intent = Intent(mContext, AlbumActivity::class.java)
+                    requestActivity.launch(intent)
+
+                    alertDialog.dismiss()
+                }
+            }
+
+            alertDialog.setView(view)
+            alertDialog.show()
+
         }
     }
 
