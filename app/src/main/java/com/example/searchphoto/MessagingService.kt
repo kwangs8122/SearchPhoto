@@ -59,22 +59,42 @@ class MessagingService : FirebaseMessagingService() {
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
 
+        val json: JSONObject = JSONObject(body)
+        val contents = if (json.has("contents")) {
+            json.getString("contents")
+        } else {
+            ""
+        }
+        val badgeCount: Int = if (json.has("badge")) {
+            json.getInt("badge")
+        } else {
+            0
+        }
+        val payload: String = if (json.has("payload")) {
+            json.getString("payload")
+        } else {
+            ""
+        }
+
+
         var pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
         val defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationCompat.Builder(this, "channelId")
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(title)
-                .setContentText(body)
+                .setContentText(contents)
                 .setSound(defaultSound)
                 .setContentIntent(pendingIntent)
+                .setNumber(badgeCount)
         } else {
             NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(title)
-                .setContentText(body)
+                .setContentText(contents)
                 .setSound(defaultSound)
                 .setContentIntent(pendingIntent)
+                .setNumber(badgeCount)
         }
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
