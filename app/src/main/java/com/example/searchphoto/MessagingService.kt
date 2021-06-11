@@ -85,13 +85,13 @@ class MessagingService : FirebaseMessagingService() {
             "msg${SimpleDateFormat("yyyyMMddHHmmss").format(Date())}"
         }
 
-        DBHelper(this, "SampleDb.db", null, 1).apply {
+        DBHelper(this, Constants().NAME_OF_DATABASE, null, 1).apply {
             writableDatabase.apply {
                 val contentValues = ContentValues()
                 contentValues.put("msg_id", msgId)
                 contentValues.put("payload", payload)
 
-                val result = insert("tb_notifications", null, contentValues)
+                val result = insert(Constants().NAME_OF_NOTIFICATION_TABLE, null, contentValues)
 
                 Log.d(TAG, "insert result = $result")
             }

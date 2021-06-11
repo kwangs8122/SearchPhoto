@@ -10,6 +10,7 @@ import android.widget.AdapterView
 import android.widget.ListView
 import android.widget.Toast
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.searchphoto.common.Constants
 import com.example.searchphoto.common.DBHelper
 import com.example.searchphoto.common.ListViewAdapter
 import com.example.searchphoto.common.ListViewItem
@@ -43,9 +44,9 @@ class NotificationActivity : AppCompatActivity() {
     }
 
     private fun drawList() {
-        DBHelper(this@NotificationActivity, "SampleDb.db", null, 1).apply {
+        DBHelper(this@NotificationActivity, Constants().NAME_OF_DATABASE, null, 1).apply {
             writableDatabase.apply {
-                var c: Cursor = query("tb_notifications", null, null, null, null, null, "idx desc")
+                var c: Cursor = query(Constants().NAME_OF_NOTIFICATION_TABLE, null, null, null, null, null, "idx desc")
 
                 Log.d(TAG, "re select row count = ${c.count}")
 
