@@ -86,6 +86,7 @@ class MessagingService : FirebaseMessagingService() {
                 .setContentText(contents)
                 .setSound(defaultSound)
                 .setContentIntent(pendingIntent)
+                .setBadgeIconType(NotificationCompat.BADGE_ICON_LARGE)
                 .setNumber(badgeCount)
         } else {
             NotificationCompat.Builder(this)
@@ -94,6 +95,7 @@ class MessagingService : FirebaseMessagingService() {
                 .setContentText(contents)
                 .setSound(defaultSound)
                 .setContentIntent(pendingIntent)
+                .setBadgeIconType(NotificationCompat.BADGE_ICON_LARGE)
                 .setNumber(badgeCount)
         }
 
