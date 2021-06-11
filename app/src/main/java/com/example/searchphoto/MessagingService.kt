@@ -108,6 +108,7 @@ class MessagingService : FirebaseMessagingService() {
                 .setContentIntent(pendingIntent)
                 .setBadgeIconType(NotificationCompat.BADGE_ICON_LARGE)
                 .setNumber(badgeCount)
+                .setAutoCancel(true)
         } else {
             NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
@@ -117,6 +118,7 @@ class MessagingService : FirebaseMessagingService() {
                 .setContentIntent(pendingIntent)
                 .setBadgeIconType(NotificationCompat.BADGE_ICON_LARGE)
                 .setNumber(badgeCount)
+                .setAutoCancel(true)
         }
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
