@@ -26,6 +26,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import com.example.searchphoto.common.Constants
 import com.example.searchphoto.common.HttpHelper
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.ktx.Firebase
@@ -64,9 +65,9 @@ class MainActivity : AppCompatActivity() {
             .setRationaleMessage("카메라 사진 권한 필요")
             .setDeniedMessage("카메라 권한 요청 거부")
             .setPermissions(
-                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                android.Manifest.permission.CAMERA)
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.CAMERA)
             .check()
     }
 
@@ -75,7 +76,7 @@ class MainActivity : AppCompatActivity() {
             val name = "samplechannel"
             val descriptionText = "samplechannel"
             val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel("channelId", name, importance).apply {
+            val channel = NotificationChannel(Constants().NOTIFICATION_CHANNEL_ID, name, importance).apply {
                 description = descriptionText
                 setShowBadge(true)
             }
@@ -94,14 +95,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             // Get new FCM registration token
-            val token = task.result
-
-            // Log and toast
-            val msg: String = "Token = $token"
-            Log.d(TAG, msg)
-//            Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
-
-            callback(token!!)
+            callback(task.result!!)
         })
     }
 
@@ -134,7 +128,7 @@ class MainActivity : AppCompatActivity() {
 
                 Log.d(TAG, "request parameters = $parameters")
 
-                val response: JSONObject = HttpHelper().post("http://14.63.221.64:48084/sample/api/setToken", parameters)!!
+                val response: JSONObject = HttpHelper().post(Constants().URL_FOR_SET_TOKEN, parameters)!!
 
                 Log.d(TAG, "result = $response")
             }).start()

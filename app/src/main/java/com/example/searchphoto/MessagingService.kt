@@ -12,6 +12,7 @@ import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import com.example.searchphoto.common.Constants
 import com.example.searchphoto.common.HttpHelper
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -48,7 +49,7 @@ class MessagingService : FirebaseMessagingService() {
 
             Log.d(TAG, "request parameters = $parameters")
 
-            val response: JSONObject = HttpHelper().post("http://14.63.221.64:48084/sample/api/setToken", parameters)!!
+            val response: JSONObject = HttpHelper().post(Constants().URL_FOR_SET_TOKEN, parameters)!!
 
             Log.d(TAG, "result = $response")
         }).start()
@@ -80,7 +81,7 @@ class MessagingService : FirebaseMessagingService() {
         var pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
         val defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationCompat.Builder(this, "channelId")
+            NotificationCompat.Builder(this, Constants().NOTIFICATION_CHANNEL_ID)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(title)
                 .setContentText(contents)
