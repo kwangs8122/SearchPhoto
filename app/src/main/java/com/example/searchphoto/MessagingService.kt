@@ -3,8 +3,10 @@ package com.example.searchphoto
 import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.database.sqlite.SQLiteDatabase
 import android.media.RingtoneManager
 import android.os.Build
 import android.os.Looper
@@ -13,6 +15,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.example.searchphoto.common.Constants
+import com.example.searchphoto.common.DBHelper
 import com.example.searchphoto.common.HttpHelper
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -56,7 +59,7 @@ class MessagingService : FirebaseMessagingService() {
     }
 
     private fun sendNotification(title: String?, body: String) {
-        val intent = Intent(this, MainActivity::class.java).apply {
+        val intent = Intent(this, NotificationActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
 
@@ -76,7 +79,23 @@ class MessagingService : FirebaseMessagingService() {
         } else {
             ""
         }
+        val msgId: String = if (json.has("msg_id")) {
+            json.getString("msg_id")
+        } else {
+            "msg${SimpleDateFormat("yyyyMMddHHmmss").format(Date())}"
+        }
 
+        DBHelper(this, "SampleDb.db", null, 1).apply {
+            writableDatabase.apply {
+                val contentValues = ContentValues()
+                contentValues.put("msg_id", msgId)
+                contentValues.put("payload", payload)
+
+                val result = insert("tb_notifications", null, contentValues)
+
+                Log.d(TAG, "insert result = $result")
+            }
+        }
 
         var pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
         val defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
