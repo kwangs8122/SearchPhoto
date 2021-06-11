@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.AbsListView
 import android.widget.AdapterView
 import android.widget.ListView
 import android.widget.Toast
@@ -13,10 +14,14 @@ import com.example.searchphoto.common.DBHelper
 import com.example.searchphoto.common.ListViewAdapter
 import com.example.searchphoto.common.ListViewItem
 import org.json.JSONObject
+import android.widget.AbsListView.OnScrollListener as OnScrollListener1
 
 class NotificationActivity : AppCompatActivity() {
     private val TAG: String = javaClass.name
     lateinit var items: MutableList<ListViewItem>
+
+    var lastItemVisibleFlag: Boolean = false
+    var mLockListView: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +68,34 @@ class NotificationActivity : AppCompatActivity() {
                 val item = parent.getItemAtPosition(position) as ListViewItem
                 Toast.makeText(this@NotificationActivity, item.tvTitle, Toast.LENGTH_SHORT).show()
             }
+
+            setOnScrollListener(object : AbsListView.OnScrollListener {
+                override fun onScrollStateChanged(view: AbsListView?, scrollState: Int) {
+                    if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE && lastItemVisibleFlag && !mLockListView) {
+                        addItems()
+                    }
+                }
+
+                override fun onScroll(
+                    view: AbsListView?,
+                    firstVisibleItem: Int,
+                    visibleItemCount: Int,
+                    totalItemCount: Int
+                ) {
+                    lastItemVisibleFlag = (totalItemCount > 0) && (firstVisibleItem * visibleItemCount >= totalItemCount)
+
+                    if (lastItemVisibleFlag) {
+                        Log.d(TAG, "마지막 셀로 이동되었음.")
+                    }
+                }
+
+            })
         }
+    }
+
+    private fun addItems() {
+        mLockListView = true
+        Log.d(TAG, "Called addItems()")
+        mLockListView = false
     }
 }
