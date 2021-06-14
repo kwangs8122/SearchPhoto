@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewTreeObserver
 import android.widget.AbsListView
 import android.widget.AdapterView
 import android.widget.ListView
@@ -30,14 +31,28 @@ class NotificationActivity : AppCompatActivity() {
 
         items = mutableListOf<ListViewItem>()
 
-        findViewById<SwipeRefreshLayout>(R.id.pullToRefresh).apply {
-            setOnRefreshListener {
+        findViewById<SwipeRefreshLayout>(R.id.pullToRefresh).also {
+            it.setOnRefreshListener {
                 items.clear()
 
                 drawList()
 
-                isRefreshing = false
+                it.isRefreshing = false
             }
+
+            it.viewTreeObserver.addOnScrollChangedListener(object : ViewTreeObserver.OnScrollChangedListener {
+                override fun onScrollChanged() {
+                    val view = findViewById<ListView>(R.id.listView)
+                    Log.d(TAG, "Called onScrollChanged() : scrollY = ${view.firstVisiblePosition}")
+
+                    if (view.firstVisiblePosition == 0) {
+                        it.isEnabled = true
+                    } else {
+                        it.isEnabled = false
+                    }
+                }
+
+            })
         }
 
         drawList()
