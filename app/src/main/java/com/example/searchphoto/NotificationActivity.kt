@@ -65,7 +65,7 @@ class NotificationActivity : AppCompatActivity() {
 
                 Log.d(TAG, "re select row count = ${c.count}")
 
-                if (c != null && c.count > 0) {
+                if (c.count > 0) {
 
                     while (c.moveToNext()) {
                         val json: JSONObject = JSONObject(c.getString(c.getColumnIndex("payload")))
