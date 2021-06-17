@@ -25,10 +25,13 @@ import java.util.*
 class CaptureActivity : AppCompatActivity() {
     lateinit var currentPhotoPath : String
     lateinit var requestActivity: ActivityResultLauncher<Intent>
+    var callback: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_capture)
+
+        callback = savedInstanceState!!.getString("callback").toString()
 
         requestActivity = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
@@ -75,6 +78,7 @@ class CaptureActivity : AppCompatActivity() {
 
                 val intent = Intent(this, MainActivity::class.java).apply {
                     this.putExtra("FILE_NAME", json.getJSONObject("result").getString("url"))
+                    this.putExtra("callback", callback)
                 }
 
                 setResult(RESULT_OK, intent)

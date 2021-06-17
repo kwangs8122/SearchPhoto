@@ -143,14 +143,15 @@ class MainActivity : AppCompatActivity() {
                 activityResult ->
 
             val photoFileName = activityResult.data?.getStringExtra("FILE_NAME")
+            var callback = activityResult.data?.getStringExtra("callback")
 
             if (photoFileName != null && !"".equals(photoFileName)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     wv.evaluateJavascript(
-                        "javascript:setResult('" + photoFileName + "');",
+                        "javascript:" + callback + "('" + photoFileName + "');",
                         ValueCallback { })
                 } else {
-                    wv.loadUrl("javascript:setResult('" + photoFileName + "');")
+                    wv.loadUrl("javascript:" + callback + "('" + photoFileName + "');")
                 }
             }
         }
@@ -227,7 +228,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         @JavascriptInterface
-        fun startCapture() {
+        fun startCapture(callback: String) {
 
             val inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             val view = inflater.inflate(R.layout.select_layout, null)
@@ -236,6 +237,7 @@ class MainActivity : AppCompatActivity() {
             view.findViewById<Button>(R.id.btnCamera).apply {
                 this.setOnClickListener{
                     val intent = Intent(mContext, CaptureActivity::class.java)
+                    intent.putExtra("callback", callback)
                     requestActivity.launch(intent)
 
                     alertDialog.dismiss()
@@ -245,6 +247,7 @@ class MainActivity : AppCompatActivity() {
             view.findViewById<Button>(R.id.btnAlbum).apply {
                 this.setOnClickListener {
                     val intent = Intent(mContext, AlbumActivity::class.java)
+                    intent.putExtra("callback", callback)
                     requestActivity.launch(intent)
 
                     alertDialog.dismiss()
