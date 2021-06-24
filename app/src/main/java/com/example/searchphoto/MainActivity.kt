@@ -228,6 +228,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         @JavascriptInterface
+        fun returnTest() : Boolean {
+            return true;
+        }
+
+        @JavascriptInterface
         fun startCapture(callback: String) {
 
             val inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
