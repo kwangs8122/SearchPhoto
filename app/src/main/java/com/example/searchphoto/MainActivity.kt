@@ -87,18 +87,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun getToken(callback: ((String) -> Unit)) {
-        Firebase.messaging.token.addOnCompleteListener(OnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                Log.w(TAG, "Fetching FCM registration token failed", task.exception)
-                return@OnCompleteListener
-            }
-
-            // Get new FCM registration token
-            callback(task.result!!)
-        })
-    }
-
     override fun onBackPressed() {
         if (System.currentTimeMillis() - mBackWait >= 2000) {
             mBackWait = System.currentTimeMillis()
@@ -116,23 +104,6 @@ class MainActivity : AppCompatActivity() {
         settingPermission()
 
         createNotificationChannel()
-        getToken { token ->
-            Thread(Runnable {
-                var parameters: HashMap<String, Any> = HashMap<String, Any>();
-                parameters.put("USER_ID", SimpleDateFormat("yyyyMMddHHmmss").format(Date()).toString())
-                parameters.put("USER_PW", "test")
-                parameters.put("DVC_OS_TYPE", "AND")
-                parameters.put("DVC_PUSH_TOKEN", token.toString())
-                parameters.put("DVC_UUID", Settings.Secure.getString(applicationContext.contentResolver,
-                    Settings.Secure.ANDROID_ID))
-
-                Log.d(TAG, "request parameters = $parameters")
-
-                val response: JSONObject = HttpHelper().post(Constants().URL_FOR_SET_TOKEN, parameters)!!
-
-                Log.d(TAG, "result = $response")
-            }).start()
-        }
 
         var wv = this.findViewById<WebView>(R.id.wv)
         wv.addJavascriptInterface(WebAppInterface(this), "Android")
