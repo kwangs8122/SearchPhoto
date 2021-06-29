@@ -6,6 +6,7 @@ import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
@@ -28,6 +29,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.example.searchphoto.common.Constants
 import com.example.searchphoto.common.HttpHelper
+import com.example.searchphoto.common.PackageHelper
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
@@ -196,6 +198,46 @@ class MainActivity : AppCompatActivity() {
         fun showToast(message : String) {
             Log.d("WebAppInterface","Called showToast()")
             Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show()
+        }
+
+        @JavascriptInterface
+        fun openMap(mapType: String, latitude: String, longitude: String) {
+            var appUrl: String = ""
+
+            when(mapType.lowercase()) {
+                "daum" -> appUrl = "net.daum.android.map"
+                "google" -> appUrl = "com.google.android.apps.maps"
+                "naver" -> appUrl = "com.nhn.android.nmap"
+            }
+
+            if (PackageHelper().isExistsApp(this@MainActivity, appUrl)) {
+                when (mapType.lowercase()) {
+                    "daum" -> {
+                        val strUrl = "daummaps://look?p=$latitude,$longitude"
+                        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(strUrl)))
+                    }
+                    "google" -> {
+                        val gmmIntentUri = Uri.parse("geo:$latitude,$longitude")
+                        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+                        mapIntent.setPackage(appUrl)
+                        mapIntent.resolveActivity(packageManager)?.let {
+                            startActivity(mapIntent)
+                        }
+                    }
+                    "naver" -> {
+                        val gmmIntentUri = Uri.parse("navermaps://?menu=location&pinType=place&lat=$latitude&lng=$longitude")
+                        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+                        mapIntent.setPackage(appUrl)
+                        mapIntent.resolveActivity(packageManager)?.let {
+                            startActivity(mapIntent)
+                        }
+                    }
+                }
+            } else {
+                val marketUrl: String = "market://details?id=$appUrl"
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(marketUrl)))
+            }
+
         }
 
         @JavascriptInterface
