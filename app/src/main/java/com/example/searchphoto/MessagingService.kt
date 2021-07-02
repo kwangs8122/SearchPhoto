@@ -101,6 +101,7 @@ class MessagingService : FirebaseMessagingService() {
         val defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationCompat.Builder(this, Constants().NOTIFICATION_CHANNEL_ID)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(title)
                 .setContentText(contents)
@@ -111,6 +112,7 @@ class MessagingService : FirebaseMessagingService() {
                 .setAutoCancel(true)
         } else {
             NotificationCompat.Builder(this)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(title)
                 .setContentText(contents)

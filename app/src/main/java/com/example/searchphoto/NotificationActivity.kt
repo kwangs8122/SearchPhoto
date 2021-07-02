@@ -68,9 +68,17 @@ class NotificationActivity : AppCompatActivity() {
                 if (c.count > 0) {
 
                     while (c.moveToNext()) {
-                        val json: JSONObject = JSONObject(c.getString(c.getColumnIndex("payload")))
+                        var payload: String = c.getString(c.getColumnIndex("payload"))
+                        if (payload != null && !"".equals(payload)) {
+                            val json: JSONObject = JSONObject()
 
-                        items.add(ListViewItem(json.getString("TITLE"), json.getString("CONTENTS")))
+                            items.add(
+                                ListViewItem(
+                                    json.getString("TITLE"),
+                                    json.getString("CONTENTS")
+                                )
+                            )
+                        }
                     }
                 }
             }
