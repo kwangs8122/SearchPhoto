@@ -29,6 +29,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.example.searchphoto.common.Constants
 import com.example.searchphoto.common.HttpHelper
+import com.example.searchphoto.common.MySharedPreferences
 import com.example.searchphoto.common.PackageHelper
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.ktx.Firebase
@@ -46,6 +47,10 @@ class MainActivity : AppCompatActivity() {
 
     private val TAG: String = javaClass.name
     private var mBackWait: Long = 0
+
+    private var callbackJsFunction: String = ""
+
+    lateinit var wv: WebView
 
     private fun settingPermission(){
         var permis = object  : PermissionListener {
@@ -107,7 +112,7 @@ class MainActivity : AppCompatActivity() {
 
         createNotificationChannel()
 
-        var wv = this.findViewById<WebView>(R.id.wv)
+        wv = this.findViewById<WebView>(R.id.wv)
         wv.addJavascriptInterface(WebAppInterface(this), "Android")
 
         requestActivity = registerForActivityResult(
@@ -193,11 +198,49 @@ class MainActivity : AppCompatActivity() {
         wv.loadUrl(url)
     }
 
+    /**
+     * 이미지 업로드 후 서버로부터 받은 응답데이터를 콜백함수로 반환
+     */
+    private fun returnJsResult(responseString: String) {
+        Log.d(TAG, "responseString = $responseString")
+        Log.d(TAG, "callbackJsFunction = ${callbackJsFunction}")
+
+        wv.post(Runnable {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                wv.evaluateJavascript(
+                    "javascript:$callbackJsFunction('$responseString');",
+                    ValueCallback { })
+            } else {
+                wv.loadUrl("javascript:$callbackJsFunction('$responseString');")
+            }
+        })
+    }
+
     inner class WebAppInterface(private val mContext: Context) {
         @JavascriptInterface
         fun showToast(message : String) {
             Log.d("WebAppInterface","Called showToast()")
             Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show()
+        }
+
+        @JavascriptInterface
+        fun getToken(callback: String) {
+            callbackJsFunction = callback
+
+            if ("".equals(MySharedPreferences(this@MainActivity).token)) {
+                Firebase.messaging.token.addOnCompleteListener(OnCompleteListener { task ->
+                    if (!task.isSuccessful) {
+                        Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                        return@OnCompleteListener
+                    }
+
+                    MySharedPreferences(this@MainActivity).token = task.result!!
+
+                    returnJsResult(task.result!!)
+                })
+            } else {
+                returnJsResult(MySharedPreferences(this@MainActivity).token!!)
+            }
         }
 
         @JavascriptInterface
