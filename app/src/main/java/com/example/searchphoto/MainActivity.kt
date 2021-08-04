@@ -153,9 +153,10 @@ class MainActivity : AppCompatActivity() {
                         setContentView(newWebView)
                         window!!.attributes.width = ViewGroup.LayoutParams.MATCH_PARENT
                         window!!.attributes.height = ViewGroup.LayoutParams.MATCH_PARENT
+                        show()
                     }
 
-                    val newWebViewChromeClient = object : WebChromeClient() {
+                    newWebView.webChromeClient = object : WebChromeClient() {
                         override fun onCloseWindow(window: WebView?) {
                             dialog.dismiss()
                         }
